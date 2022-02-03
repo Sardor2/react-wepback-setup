@@ -3,8 +3,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const modeConfig = (env) => require(`./build-tools/webpack.${env}`)(env);
 const { merge } = require("webpack-merge");
+const presetConfig = require("./build-tools/loadPresets");
 
-module.exports = ({ mode } = { mode: "production" }) => {
+module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
   console.log(`mode is: ${mode}`);
   return merge(
     {
@@ -49,6 +50,7 @@ module.exports = ({ mode } = { mode: "production" }) => {
         ],
       },
     },
-    modeConfig(mode)
+    modeConfig(mode),
+    presetConfig({ mode, presets })
   );
 };
