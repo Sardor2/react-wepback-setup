@@ -1,10 +1,16 @@
 module.exports = (env) => {
   return {
-    devtool: "source-map",
+    plugins: [],
+    devtool: "cheap-module-source-map",
     devServer: {
-      open: true,
       hot: true,
       port: 3000,
+      open: true,
+      client: {
+        overlay: true,
+        progress: true,
+        logging: "info",
+      },
     },
     module: {
       rules: [

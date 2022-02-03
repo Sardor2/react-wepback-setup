@@ -1,6 +1,7 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = (env) => {
   return {
@@ -10,6 +11,7 @@ module.exports = (env) => {
         filename: "[name].css",
         chunkFilename: "[id].css",
       }),
+      new CompressionPlugin(),
     ],
     optimization: {
       minimizer: [
@@ -23,6 +25,7 @@ module.exports = (env) => {
     },
     output: {
       filename: "bundle.js",
+      assetModuleFilename: "assets/[hash][ext][query]",
     },
     module: {
       rules: [
@@ -33,6 +36,13 @@ module.exports = (env) => {
         {
           test: /\.css$/,
           use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.html/,
+          type: "asset/resource",
+          generator: {
+            filename: "static/[hash][ext][query]",
+          },
         },
       ],
     },

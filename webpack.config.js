@@ -4,6 +4,7 @@ const webpack = require("webpack");
 const modeConfig = (env) => require(`./build-tools/webpack.${env}`)(env);
 const { merge } = require("webpack-merge");
 const presetConfig = require("./build-tools/loadPresets");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
   console.log(`mode is: ${mode}`);
@@ -23,6 +24,13 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
           template: path.join(__dirname, "src", "index.html"),
         }),
         new webpack.HotModuleReplacementPlugin(),
+        new ESLintPlugin({
+          extensions: ["ts", "tsx", "js", "jsx"],
+          fix: false,
+          emitError: true,
+          emitWarning: true,
+          failOnError: true,
+        }),
       ],
 
       module: {
@@ -30,12 +38,14 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
           {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
-            use: {
-              loader: "babel-loader",
-              options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"],
+            use: [
+              {
+                loader: "babel-loader",
+                options: {
+                  presets: ["@babel/preset-env", "@babel/preset-react"],
+                },
               },
-            },
+            ],
           },
           {
             test: /\.(ts|tsx)$/,
@@ -44,8 +54,12 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
           },
           {
             test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-            exclude: /node_modules/,
-            use: ["url-loader", "file-loader"],
+            type: "asset",
+            parser: {
+              dataUrlCondition: {
+                maxSize: 4 * 1024, // 4kb
+              },
+            },
           },
         ],
       },
